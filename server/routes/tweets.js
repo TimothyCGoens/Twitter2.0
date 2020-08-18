@@ -8,28 +8,34 @@ const db = mongoose.connection;
 db.on("error", (err) => console.log(err));
 db.once("open", () => console.log("connected to database"));
 
-// router.get("/", async (req, res) => {
-//   tweet
-//     .find({ text: { $regex: ".*America*." } }, function (err, result) {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         res.json(result);
-//       }
-//     })
-//     .select("text");
-// });
-
-router.get("/word/:id", async (req, res) => {
-  let searchTerm = req.params.searchTerm;
+router.get("/", async (req, res) => {
   tweet
-    .find({ text: { $regex: `.*${searchTerm}*.` } }, function (err, result) {
+    .find({}, function (err, result) {
       if (err) {
         console.log(err);
       } else {
         res.json(result);
       }
     })
+    .select("text");
+});
+
+//query db for specific words in the text field
+router.get("/word/:id", async (req, res) => {
+  let searchTerm = req.params.id;
+  console.log(searchTerm);
+  tweet
+    .find(
+      { text: { $regex: `${searchTerm}`, $options: "i" } },
+      "id_str",
+      function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          res.json(result);
+        }
+      }
+    )
     .select("text");
 });
 

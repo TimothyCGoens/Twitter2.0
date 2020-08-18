@@ -3,13 +3,14 @@ import axios from "axios";
 
 const App = () => {
   const [text, setText] = useState([]);
+  const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:8080/tweets/")
-  //     .then((response) => setText(response.data));
-  // }, []);
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/tweets/")
+      .then((response) => setText(response.data));
+  }, []);
 
   const tweets = text.map((item) => {
     return <p key={item._id}>{item.text}</p>;
@@ -18,8 +19,18 @@ const App = () => {
   const onSubmitTerm = () => {
     axios
       .get(`http://localhost:8080/tweets/word/${searchTerm}`)
-      .then((response) => console.log(response));
+      .then((response) => setData(response.data));
   };
+  const link = data.map((item) => {
+    return (
+      <a
+        key={item._id}
+        target="_blank"
+        href={`https://twitter.com/realDonaldTrump/status/${item.id_str}`}>
+        {item.text}
+      </a>
+    );
+  });
 
   return (
     <div>
@@ -27,7 +38,8 @@ const App = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}></input>
       <button onClick={onSubmitTerm}>Submit</button>
-      <h1>{tweets}</h1>
+      <h1>Tweets</h1>
+      <p>{link}</p>
     </div>
   );
 };
